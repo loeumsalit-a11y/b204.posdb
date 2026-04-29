@@ -1,0 +1,144 @@
+<!-- sales/templates/sales/product_detail.html -->
+<!DOCTYPE html>
+<html lang="km">
+<head>
+<meta charset="UTF-8">
+<title>📦 Product Detail</title>
+<style>
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    max-width: 1000px;
+    margin: 40px auto;
+    background: #f0f4f8;
+    color: #2d3748;
+    line-height: 1.6;
+    padding: 0 20px;
+}
+
+h1 {
+    color: #2b6cb0;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+nav {
+    text-align: center;
+    margin-bottom: 30px;
+}
+nav a {
+    margin: 0 12px;
+    color: #2b6cb0;
+    text-decoration: none;
+    font-weight: 500;
+}
+nav a:hover { text-decoration: underline; }
+
+.category-filter {
+    margin-bottom: 20px;
+    text-align: center;
+}
+.category-filter select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e0;
+    font-size: 16px;
+}
+
+.card {
+    display: flex;
+    gap: 40px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.image img {
+    width: 300px;
+    border-radius: 15px;
+    object-fit: cover;
+}
+.info h2 { margin-top:0; color:#2b6cb0; font-size:28px; }
+.price { font-size:26px; font-weight:700; color:#2f855a; margin:10px 0; }
+.stock { font-weight:bold; margin-bottom:15px; }
+.instock { color:#38a169; }
+.outstock { color:#e53e3e; }
+.desc { margin-bottom:20px; color:#4a5568; }
+
+.btn {
+    display: inline-block;
+    padding: 12px 22px;
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-right: 10px;
+}
+.edit { background:#dd6b20; color:#fff; }
+.back { background:#2b6cb0; color:#fff; }
+
+footer {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 14px;
+    color: #718096;
+}
+
+@media (max-width:768px) {
+    .card { flex-direction: column; align-items: center; text-align: center; }
+    .image img { width: 100%; max-width: 300px; }
+}
+</style>
+</head>
+<body>
+
+<h1>📦 ព័ត៌មានផលិតផល</h1>
+
+<nav>
+    <a href="/sales/products/">Products</a>
+    <a href="/sales/orders/">Orders</a>
+    <a href="/admin/">Admin</a>
+</nav>
+
+
+
+<div class="card">
+    <div class="image">
+        {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+        <img src="https://via.placeholder.com/300" alt="No Image">
+        {% endif %}
+    </div>
+
+    <div class="info">
+        <h2>{{ product.name }}</h2>
+        <p class="price">$ {{ product.price|floatformat:2 }}</p>
+        <p class="category">Category: <strong>{{ product.get_category_display }}</strong></p>
+        {% if product.barcode %}
+        <p class="category">Barcode: <strong>{{ product.barcode }}</strong></p>
+        {% endif %}
+        <p class="stock">
+            {% if product.stock > 0 %}
+            <span class="instock">✔ In Stock ({{ product.stock }})</span>
+            {% else %}
+            <span class="outstock">✖ Out of Stock</span>
+            {% endif %}
+        </p>
+        </p>
+        <a class="btn edit" href="/admin/sales/product/{{ product.id }}/change/">✏ Edit</a>
+        <a class="btn back" href="/sales/products/">⬅ Back to Products</a>
+    </div>
+    Loeum salit
+</div>
+
+<footer>
+    Developed by Loeum Salit
+</footer>
+
+</body>
+</html>
