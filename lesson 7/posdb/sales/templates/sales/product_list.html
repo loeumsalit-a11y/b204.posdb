@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}បញ្ជីផលិតផល — POS System{% endblock %}
+
+{% block extra_css %}
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card {
+    background: var(--card-bg);
+
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+}
+
+.product-card h2 {
+    margin: 0.5rem 0;
+    font-size: 1.25rem;
+}
+
+.product-card h2 a {
+    text-decoration: none;
+    color: var(--text-main);
+}
+
+.price-tag {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #059669;
+}
+
+.stock-info {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.stock-low {
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.category-badge {
+    background: #eff6ff;
+    color: #2563eb;
+}
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1>📦 បញ្ជីផលិតផល</h1>
+        <p style="color: var(--text-muted);">មាន {{ products|length }} ផលិតផលកំពុងចរាចរណ៍ក្នុងប្រព័ន្ធ</p>
+    </div>
+    <form method="get" style="display: flex; gap: 0.5rem; flex-grow: 1; max-width: 400px; margin: 0 2rem;">
+        <input type="text" name="q" placeholder="ស្វែងរកតាមឈ្មោះ ឬ Barcode..." value="{{ query|default:'' }}" 
+               style="width: 100%; padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid #cbd5e0; font-family: inherit; background: var(--white); color: var(--text-main);">
+        <button type="submit" class="btn btn-primary">ស្វែងរក</button>
+    </form>
+    <a href="/admin/sales/product/add/" class="btn btn-primary" target="_blank">
+        ＋ បន្ថែមផលិតផលថ្មី
+    </a>
+</div>
+
+<div style="margin-bottom: 2rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <a href="/sales/products/" class="btn {% if not selected_category %}btn-primary{% else %}style='background: var(--white); color: var(--text-main); border: 1px solid var(--border);'{% endif %}" style="border-radius: 20px;">
+        ទាំងអស់
+    </a>
+    {% for cat_id, cat_name in categories %}
+    <a href="/sales/products/?cat={{ cat_id }}{% if query %}&q={{ query }}{% endif %}" 
+       class="btn {% if selected_category == cat_id %}btn-primary{% else %}style='background: var(--white); color: var(--text-main); border: 1px solid var(--border);'{% endif %}"
+       style="border-radius: 20px; {% if selected_category != cat_id %}background: var(--white); color: var(--text-main); border: 1px solid var(--border);{% endif %}">
+        {{ cat_name }}
+    </a>
+    {% endfor %}
+</div>
+
+
+
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <div style="display: flex; gap: 1rem;">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+            {% else %}
+                <div style="width: 80px; height: 80px; background: #f1f5f9; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">📦</div>
+            {% endif %}
+            <div>
+                <span class="badge category-badge">{{ product.get_category_display }}</span>
+                <h2><a href="/sales/products/{{ product.pk }}/">{{ product.name }}</a></h2>
+                {% if product.barcode %}
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Barcode: {{ product.barcode }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        
+        <div style="margin-top: 1.5rem;">
+            <div class="price-tag">${{ product.price|floatformat:2 }}</div>
+            <div class="stock-info">
+                {% if product.stock <= 10 %}
+                <span class="stock-low">⚠️ ស្តុកទាប: {{ product.stock }} នៅសល់</span>
+                {% else %}
+                <span>✅ ក្នុងស្តុក: {{ product.stock }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="card" style="grid-column: 1 / -1; text-align: center;">
+        <p style="color: var(--text-muted); font-style: italic;">មិនទាន់មានផលិតផលទេ — សូមបន្ថែមផលិតផលដំបូងរបស់អ្នក!</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('nav-products').classList.add('active');
+</script>
+{% endblock %}
